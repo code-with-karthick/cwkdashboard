@@ -1,0 +1,33 @@
+# Django Student Management System - Requirements
+
+# Core Framework
+Django==4.2.7
+
+# Image Processing
+Pillow
+
+# Database (optional - uncomment if using PostgreSQL)
+# psycopg2-binary==2.9.9
+
+# Database (optional - uncomment if using MySQL)
+# mysqlclient==2.2.0
+
+# Deployment (optional)
+# gunicorn==21.2.0
+# whitenoise==6.6.0
+
+# Development Tools (optional)
+# django-debug-toolbar==4.2.0
+
+# Environment Variables
+# python-decouple==3.8
+
+# Excel Export (optional for reports)
+# openpyxl==3.1.2
+# xlsxwriter==3.1.9
+
+# PDF Generation (optional for receipts)
+# reportlab==4.0.7
+# xhtml2pdf==0.2.13
+pip install gunicorn static3
+pip freeze > requirements.txt

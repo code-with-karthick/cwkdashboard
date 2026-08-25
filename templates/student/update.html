@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Student - {{ block.super }}{% endblock %}
+{% block page_title %}Edit Student{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Edit Student: {{ student.first_name }} {{ student.last_name }}</h5>
+                <a href="{% url 'student_list' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Profile Picture Upload -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <div class="profile-upload">
+                                <div class="profile-preview" id="profilePreview">
+                                    {% if student.profile_picture %}
+                                        <img src="{{ student.profile_picture.url }}" alt="{{ student.first_name }}">
+                                    {% else %}
+                                        <i class="fas fa-camera fa-2x text-muted"></i>
+                                        <p class="mb-0 mt-2">Upload Photo</p>
+                                    {% endif %}
+                                </div>
+                                <input type="file" class="form-control" id="profile_picture" name="profile_picture" 
+                                       accept="image/*" style="display: none;">
+                                <button type="button" class="btn btn-outline-primary mt-2" onclick="document.getElementById('profile_picture').click()">
+                                    Change Photo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Name Fields -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="first_name" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" 
+                                   value="{{ student.first_name }}" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="middle_name" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" id="middle_name" name="middle_name" 
+                                   value="{{ student.middle_name|default:'' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="last_name" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" 
+                                   value="{{ student.last_name }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ student.email }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone_number" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone_number" name="phone_number" 
+                                   value="{{ student.phone_number }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Gender and City -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="gender" class="form-label">Gender *</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="city" class="form-label">City *</label>
+                            <input type="text" class="form-control" id="city" name="city" 
+                                   value="{{ student.city }}" required>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="mb-4">
+                        <label for="address" class="form-label">Address *</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required>{{ student.address }}</textarea>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-2"></i>Update Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-upload {
+    display: inline-block;
+}
+
+.profile-preview {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed #dee2e6;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.profile-preview:hover {
+    border-color: var(--primary-color);
+    background-color: #f8f9fa;
+}
+
+.profile-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+</style>
+
+<script>
+document.getElementById('profile_picture').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('profilePreview');
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

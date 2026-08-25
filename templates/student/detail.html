@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ student.first_name }} {{ student.last_name }} - {{ block.super }}{% endblock %}
+{% block page_title %}Student Details{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Student Profile</h4>
+            <div>
+                <a href="{% url 'student_update' student.pk %}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit me-2"></i>Edit
+                </a>
+                <a href="{% url 'student_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Student Information Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                {% if student.profile_picture %}
+                    <img src="{{ student.profile_picture.url }}" alt="{{ student.first_name }}" 
+                         class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
+                {% else %}
+                    <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                         style="width: 120px; height: 120px;">
+                        <i class="fas fa-user fa-3x text-white"></i>
+                    </div>
+                {% endif %}
+
+                <h4>{{ student.first_name }} 
+                    {% if student.middle_name %}{{ student.middle_name }} {% endif %}
+                    {{ student.last_name }}
+                </h4>
+                <p class="text-muted">Student ID: #{{ student.pk }}</p>
+
+                <!-- Fee Summary -->
+                <div class="row text-center mt-4">
+                    <div class="col">
+                        <h5 class="text-info mb-0">${{ student.total_fee|floatformat:2 }}</h5>
+                        <small class="text-muted">Total Fee</small>
+                    </div>
+                    <div class="col">
+                        <h5 class="text-success mb-0">${{ student.paid_fee|floatformat:2 }}</h5>
+                        <small class="text-muted">Paid</small>
+                    </div>
+                    <div class="col">
+                        <h5 class="text-danger mb-0">${{ student.due_fee|floatformat:2 }}</h5>
+                        <small class="text-muted">Due</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Details Card -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Email</label>
+                        <p class="mb-0">{{ student.email }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Phone Number</label>
+                        <p class="mb-0">{{ student.phone_number }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Gender</label>
+                        <p class="mb-0">{{ student.gender }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">City</label>
+                        <p class="mb-0">{{ student.city }}</p>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted">Address</label>
+                        <p class="mb-0">{{ student.address }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Admission Date</label>
+                        <p class="mb-0">{{ student.admission_date|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Enrolled Courses -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Enrolled Courses</h5>
+                <span class="badge bg-primary">{{ student.courses.count }}</span>
+            </div>
+            <div class="card-body">
+                {% if student.courses.all %}
+                    <div class="list-group list-group-flush">
+                        {% for course in student.courses.all %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-1">{{ course.name }}</h6>
+                                <small class="text-muted">{{ course.description|truncatewords:10 }}</small>
+                            </div>
+                            <span class="badge bg-success">${{ course.fee|floatformat:2 }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-book-open fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No courses enrolled yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment History -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Payment History</h5>
+                <a href="{% url 'payment_add' %}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus me-1"></i>Add Payment
+                </a>
+            </div>
+            <div class="card-body">
+                {% if payments %}
+                    <div class="list-group list-group-flush">
+                        {% for payment in payments %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-1">${{ payment.amount|floatformat:2 }}</h6>
+                                <small class="text-muted">{{ payment.payment_date|date:"M d, Y" }}</small>
+                                {% if payment.remarks %}
+                                    <small class="d-block text-muted">{{ payment.remarks|truncatewords:8 }}</small>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="badge bg-success me-2">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <a href="{% url 'payment_detail' payment.pk %}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-credit-card fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No payments recorded yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

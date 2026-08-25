@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - {{ block.super }}{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Stats Cards -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-primary bg-opacity-10 text-primary me-3">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div>
+                    <div class="h4 mb-0">{{ total_students }}</div>
+                    <div class="text-muted small">Total Students</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-success bg-opacity-10 text-success me-3">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div>
+                    <div class="h4 mb-0">{{ total_courses }}</div>
+                    <div class="text-muted small">Total Courses</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-info bg-opacity-10 text-info me-3">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div>
+                    <div class="h4 mb-0">{{ total_faculty }}</div>
+                    <div class="text-muted small">Faculty Members</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-warning bg-opacity-10 text-warning me-3">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div>
+                    <div class="h4 mb-0">${{ total_payments|floatformat:2 }}</div>
+                    <div class="text-muted small">Total Payments</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Fee Overview Card -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Fee Overview</h5>
+                <small class="text-muted">Current academic year</small>
+            </div>
+            <div class="card-body">
+                <canvas id="feeChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'student_add' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add New Student
+                    </a>
+                    <a href="{% url 'course_add' %}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Add New Course
+                    </a>
+                    <a href="{% url 'faculty_add' %}" class="btn btn-info">
+                        <i class="fas fa-plus me-2"></i>Add Faculty
+                    </a>
+                    <a href="{% url 'payment_add' %}" class="btn btn-warning">
+                        <i class="fas fa-plus me-2"></i>Record Payment
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Activities</h5>
+                <a href="{% url 'reports' %}" class="btn btn-sm btn-outline-primary">View Reports</a>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <h3 class="text-success">${{ total_payments|floatformat:2 }}</h3>
+                            <p class="text-muted mb-0">Total Collected</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <h3 class="text-danger">${{ due_fees|floatformat:2 }}</h3>
+                            <p class="text-muted mb-0">Outstanding Dues</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="text-info">{{ total_students }}</h3>
+                        <p class="text-muted mb-0">Active Students</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Fee Overview Chart
+const ctx = document.getElementById('feeChart').getContext('2d');
+const feeChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Collected', 'Outstanding'],
+        datasets: [{
+            data: [{{ total_payments }}, {{ due_fees }}],
+            backgroundColor: ['#10b981', '#ef4444'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

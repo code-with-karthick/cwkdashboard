@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.name }} - {{ block.super }}{% endblock %}
+{% block page_title %}Course Details{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Course Information</h4>
+            <div>
+                <a href="{% url 'course_update' course.pk %}" class="btn btn-warning me-2">
+                    <i class="fas fa-edit me-2"></i>Edit
+                </a>
+                <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Course Details -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-book fa-2x text-primary"></i>
+                    </div>
+                    <h4>{{ course.name }}</h4>
+                    <p class="text-muted">Course ID: #{{ course.pk }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">Course Fee</label>
+                    <h5 class="text-success">${{ course.fee|floatformat:2 }}</h5>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">Enrolled Students</label>
+                    <h5 class="text-info">{{ course.students.count }}</h5>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">Total Revenue</label>
+                    {% widthratio course.students.count course.fee 1 as total_revenue %}
+                    <h5 class="text-warning">${{ total_revenue|floatformat:2 }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Description -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Course Description</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">{{ course.description|linebreaks }}</p>
+            </div>
+        </div>
+
+        <!-- Enrolled Students -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Enrolled Students</h5>
+                <span class="badge bg-primary">{{ course.students.count }}</span>
+            </div>
+            <div class="card-body">
+                {% if course.students.all %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>City</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in course.students.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if student.profile_picture %}
+                                                <img src="{{ student.profile_picture.url }}" alt="{{ student.first_name }}" 
+                                                     class="rounded-circle me-2" width="32" height="32" style="object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" 
+                                                     style="width: 32px; height: 32px;">
+                                                    <i class="fas fa-user text-white small"></i>
+                                                </div>
+                                            {% endif %}
+                                            <span>{{ student.first_name }} {{ student.last_name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ student.email }}</td>
+                                    <td>{{ student.phone_number }}</td>
+                                    <td>{{ student.city }}</td>
+                                    <td>
+                                        <a href="{% url 'student_detail' student.pk %}" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">No students enrolled yet</h6>
+                        <p class="text-muted">Students will appear here when they enroll in this course.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
