@@ -29,6 +29,7 @@ Pillow
 # PDF Generation (optional for receipts)
 # reportlab==4.0.7
 # xhtml2pdf==0.2.13
+Django
 gunicorn
 static3
-
+pymysql
