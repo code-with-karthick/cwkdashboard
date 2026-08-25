@@ -31,4 +31,4 @@ Pillow
 # xhtml2pdf==0.2.13
 gunicorn
 static3
-pip freeze > requirements.txt
+
