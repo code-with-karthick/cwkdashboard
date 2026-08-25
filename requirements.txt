@@ -29,5 +29,6 @@ Pillow
 # PDF Generation (optional for receipts)
 # reportlab==4.0.7
 # xhtml2pdf==0.2.13
-pip install gunicorn static3
+gunicorn
+static3
 pip freeze > requirements.txt
